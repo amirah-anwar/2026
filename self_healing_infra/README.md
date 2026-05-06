@@ -44,3 +44,38 @@ Added a failure injection engine that can simulate:
 - crash
 - latency_spike
 - high_error_rate
+
+## Day 3 Features
+
+Added monitoring and alerting engine.
+
+Current monitoring capabilities:
+- Detect crashed services
+- Detect high latency
+- Detect high error rates
+- Generate severity-based alerts
+- Store historical alerts
+
+## Alert Severity Levels
+
+- CRITICAL
+- HIGH
+
+## Day 4 Features
+
+Added intelligent dependency-aware monitoring.
+
+New capabilities:
+- Service dependency graph
+- Cascading failure simulation
+- Dependency-based degradation
+- Alert deduplication
+- Smarter severity classification
+
+## Example Dependency Chain
+
+auth-service
+    ↓
+payment-service
+    ↓
+notification-service

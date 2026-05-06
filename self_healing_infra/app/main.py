@@ -2,11 +2,12 @@
 
 from fastapi import FastAPI, HTTPException
 from app.simulator import ServiceSimulator
+from app.monitor import MonitoringEngine
 
 app = FastAPI(title="Self-Healing Infrastructure Simulator")
 
 simulator = ServiceSimulator()
-
+monitor = MonitoringEngine()
 
 @app.get("/")
 def root():
@@ -55,4 +56,39 @@ def recover_service(service_name: str):
     return {
         "message": f"Recovered {service_name}",
         "service": service
+    }
+
+
+@app.get("/monitor")
+def monitor_services():
+    simulator.apply_dependency_failures()
+
+    services = simulator.get_all_services()
+    new_alerts = monitor.evaluate_all_services(services)
+
+    return {
+        "services_checked": len(services),
+        "new_alerts_generated": len(new_alerts),
+        "new_alerts": new_alerts,
+        "active_alerts_count": len(monitor.get_alerts()),
+        "active_alerts": monitor.get_alerts(),
+    }
+
+
+@app.get("/alerts")
+def get_alerts():
+    simulator.apply_dependency_failures()
+
+    services = simulator.get_all_services()
+    monitor.evaluate_all_services(services)
+
+    return monitor.get_alerts()
+
+
+@app.delete("/alerts")
+def clear_alerts():
+    monitor.clear_alerts()
+
+    return {
+        "message": "All alerts cleared"
     }
