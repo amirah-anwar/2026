@@ -12,18 +12,23 @@ class ServiceSimulator:
                 "latency_ms": 80,
                 "error_rate": 0.01,
                 "active_failure": None,
+                "dependencies": [],
             },
+
             "payment-service": {
                 "is_up": True,
                 "latency_ms": 120,
                 "error_rate": 0.02,
                 "active_failure": None,
+                "dependencies": ["auth-service"],
             },
+
             "notification-service": {
                 "is_up": True,
                 "latency_ms": 60,
                 "error_rate": 0.01,
                 "active_failure": None,
+                "dependencies": ["payment-service"],
             },
         }
 
@@ -45,10 +50,13 @@ class ServiceSimulator:
             latency_ms=data["latency_ms"],
             error_rate=data["error_rate"],
             active_failure=data["active_failure"],
+            dependencies=data["dependencies"],
         )
 
     def inject_random_behavior(self):
+        # normal fluctuations
         for service in self.services.values():
+
             if service["active_failure"] is not None:
                 continue
 
@@ -56,7 +64,12 @@ class ServiceSimulator:
             service["latency_ms"] = max(20, service["latency_ms"])
 
             service["error_rate"] += random.uniform(-0.005, 0.01)
-            service["error_rate"] = max(0.0, min(service["error_rate"], 1.0))
+            service["error_rate"] = max(
+                0.0,
+                min(service["error_rate"], 1.0)
+            )
+        # dependency effects
+        self.apply_dependency_failures()
 
     def inject_failure(self, service_name, failure_type):
         if service_name not in self.services:
@@ -92,3 +105,30 @@ class ServiceSimulator:
         service["active_failure"] = None
 
         return self._to_status(service_name, service)
+    
+    def apply_dependency_failures(self):
+        for service_name, service_data in self.services.items():
+            for dependency in service_data["dependencies"]:
+                dependency_service = self.services[dependency]
+
+                dependency_is_unhealthy = (
+                    not dependency_service["is_up"]
+                    or dependency_service["active_failure"] is not None
+                    or dependency_service["latency_ms"] > 1000
+                    or dependency_service["error_rate"] > 0.5
+                )
+
+                if dependency_is_unhealthy:
+                    service_data["latency_ms"] = max(
+                        service_data["latency_ms"],
+                        1500
+                    )
+
+                    service_data["error_rate"] = max(
+                        service_data["error_rate"],
+                        0.6
+                    )
+
+                    service_data["active_failure"] = (
+                        f"dependency_failure:{dependency}"
+                    )
