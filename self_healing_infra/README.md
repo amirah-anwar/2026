@@ -28,3 +28,19 @@ This project simulates a distributed system with multiple services. It will even
 - Add alert generation
 - Add AI decision engine
 - Add self-healing actions
+
+
+## Day 2 Features
+
+Added a failure injection engine that can simulate:
+
+- Service crashes
+- Latency spikes
+- High error rates
+- Manual recovery
+
+## Supported Failure Types
+
+- crash
+- latency_spike
+- high_error_rate
