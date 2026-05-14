@@ -3,11 +3,18 @@
 from fastapi import FastAPI, HTTPException
 from app.simulator import ServiceSimulator
 from app.monitor import MonitoringEngine
+from app.ai_engine import AIRootCauseAnalyzer
+from app.healing_engine import SelfHealingEngine
+from app.recovery_log import RecoveryLog
+
+recovery_log = RecoveryLog()
 
 app = FastAPI(title="Self-Healing Infrastructure Simulator")
 
 simulator = ServiceSimulator()
 monitor = MonitoringEngine()
+ai_engine = AIRootCauseAnalyzer()
+healing_engine = SelfHealingEngine()
 
 @app.get("/")
 def root():
@@ -92,3 +99,61 @@ def clear_alerts():
     return {
         "message": "All alerts cleared"
     }
+
+
+@app.get("/analyze")
+def analyze_incident():
+    simulator.apply_dependency_failures()
+    services = simulator.get_all_services()
+    monitor.evaluate_all_services(services)
+    alerts = monitor.get_alerts()
+
+    analysis = ai_engine.analyze_alerts(alerts)
+
+    return {
+        "total_alerts": len(alerts),
+        "alerts": alerts,
+        "ai_analysis": analysis
+    }
+
+
+@app.post("/self-heal")
+def self_heal():
+    simulator.apply_dependency_failures()
+
+    services = simulator.get_all_services()
+    monitor.evaluate_all_services(services)
+
+    alerts = monitor.get_alerts()
+
+    actions = healing_engine.determine_actions(alerts)
+
+    results = healing_engine.execute_actions(
+        actions,
+        simulator
+    )
+
+    for result in results:
+        recovery_log.add_entry(result)
+
+    # Clear old stale alerts after healing
+    monitor.clear_alerts()
+
+    # Re-check current system state after healing
+    simulator.apply_dependency_failures()
+    updated_services = simulator.get_all_services()
+    new_alerts = monitor.evaluate_all_services(updated_services)
+
+    return {
+        "alerts_detected_before_healing": len(alerts),
+        "actions_planned": actions,
+        "execution_results": results,
+        "alerts_after_healing": new_alerts,
+        "active_alerts_count": len(monitor.get_alerts()),
+        "active_alerts": monitor.get_alerts(),
+    }
+
+
+@app.get("/recovery-log")
+def get_recovery_log():
+    return recovery_log.get_entries()

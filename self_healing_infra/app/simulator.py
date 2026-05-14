@@ -104,6 +104,16 @@ class ServiceSimulator:
         service["error_rate"] = round(random.uniform(0.01, 0.03), 3)
         service["active_failure"] = None
 
+        for other_service in self.services.values():
+            if (
+                other_service["active_failure"] is not None
+                and "dependency_failure" in other_service["active_failure"]
+            ):
+                other_service["is_up"] = True
+                other_service["latency_ms"] = random.randint(50, 150)
+                other_service["error_rate"] = round(random.uniform(0.01, 0.03), 3)
+                other_service["active_failure"] = None
+
         return self._to_status(service_name, service)
     
     def apply_dependency_failures(self):
