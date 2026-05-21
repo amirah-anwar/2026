@@ -1,0 +1,26 @@
+[
+  {
+    "name": "model-training-job",
+    "cpu_required": 64,
+    "gpu_required": 8,
+    "memory_required": 128,
+    "preferred_region": "us-east",
+    "max_latency_ms": 60
+  },
+  {
+    "name": "inference-service",
+    "cpu_required": 32,
+    "gpu_required": 2,
+    "memory_required": 64,
+    "preferred_region": "us-west",
+    "max_latency_ms": 40
+  },
+  {
+    "name": "batch-data-pipeline",
+    "cpu_required": 100,
+    "gpu_required": 0,
+    "memory_required": 256,
+    "preferred_region": null,
+    "max_latency_ms": 100
+  }
+]

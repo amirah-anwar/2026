@@ -1,0 +1,29 @@
+[
+  {
+    "name": "cluster-us-west",
+    "region": "us-west",
+    "cpu_available": 200,
+    "gpu_available": 16,
+    "memory_available": 512,
+    "cost_per_hour": 2.5,
+    "latency_ms": 80
+  },
+  {
+    "name": "cluster-us-east",
+    "region": "us-east",
+    "cpu_available": 120,
+    "gpu_available": 8,
+    "memory_available": 256,
+    "cost_per_hour": 2.0,
+    "latency_ms": 30
+  },
+  {
+    "name": "cluster-us-central",
+    "region": "us-central",
+    "cpu_available": 300,
+    "gpu_available": 4,
+    "memory_available": 1024,
+    "cost_per_hour": 1.8,
+    "latency_ms": 50
+  }
+]

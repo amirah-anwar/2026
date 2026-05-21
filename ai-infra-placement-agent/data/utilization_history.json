@@ -1,0 +1,16 @@
+{
+  "cluster-us-west": {
+    "gpu_usage": [6, 8, 10, 12],
+    "cpu_usage": [90, 100, 110, 120]
+  },
+
+  "cluster-us-east": {
+    "gpu_usage": [2, 4, 5, 7],
+    "cpu_usage": [50, 60, 75, 85]
+  },
+
+  "cluster-us-central": {
+    "gpu_usage": [1, 1, 2, 3],
+    "cpu_usage": [70, 90, 110, 140]
+  }
+}
