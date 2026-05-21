@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.placement_engine import load_clusters, load_workloads, recommend_cluster
 from app.capacity_forecast import load_history, forecast_cluster
+from app.self_healing import recommend_migrations
 
 app = FastAPI(
     title="AI Infrastructure Planning & Placement Agent",
@@ -97,3 +98,17 @@ def get_forecast():
         })
 
     return results
+
+
+@app.get("/self-healing")
+def get_self_healing_recommendations():
+    clusters = load_clusters(CLUSTERS_FILE)
+    workloads = load_workloads(WORKLOADS_FILE)
+    history = load_history(HISTORY_FILE)
+
+    return recommend_migrations(
+        clusters,
+        workloads,
+        history,
+        recommend_cluster
+    )
