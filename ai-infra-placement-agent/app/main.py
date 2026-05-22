@@ -171,3 +171,11 @@ def get_explained_recommendations():
         })
 
     return results
+
+
+@app.get("/health")
+def health():
+
+    return {
+        "status": "healthy"
+    }

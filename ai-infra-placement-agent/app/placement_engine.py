@@ -1,5 +1,6 @@
 import json
 from app.models import Cluster, Workload
+from app.logger import logger
 
 
 def load_clusters(file_path):
@@ -68,6 +69,11 @@ def calculate_score(workload, cluster):
 
 
 def recommend_cluster(workload, clusters):
+
+    logger.info(
+        f"Evaluating workload "
+        f"{workload.name}"
+    )
     accepted = []
     rejected = []
 
@@ -84,6 +90,15 @@ def recommend_cluster(workload, clusters):
         return None, rejected, []
 
     accepted.sort(key=lambda item: item[1], reverse=True)
-    best_cluster = accepted[0]
+    best_result = accepted[0]
+    best_cluster, best_score = best_result
 
-    return best_cluster, rejected, accepted
+    logger.info(
+        f"Selected "
+        f"{best_cluster.name} "
+        f"for "
+        f"{workload.name} "
+        f"with score {best_score}"
+    )
+
+    return best_result, rejected, accepted

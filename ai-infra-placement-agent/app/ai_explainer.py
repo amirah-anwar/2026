@@ -4,10 +4,25 @@ from openai import OpenAI
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+api_key = os.getenv(
+    "OPENAI_API_KEY"
+)
+
+client = None
+
+if api_key:
+    client = OpenAI(
+        api_key=api_key
+    )
+
 
 
 def explain_recommendation(workload_name, recommendation, ranked_clusters, rejected_clusters):
+    if client is None:
+        return (
+            "AI explanation unavailable. "
+            "OpenAI API key not configured."
+        )
     prompt = f"""
 Explain this infrastructure placement recommendation in clear, concise language.
 
